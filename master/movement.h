@@ -3,18 +3,15 @@
 
 #include "pins.h"
 
+extern int currentSpeed;
+
 void setSpeed(int speed);
-void moveForward(int speed);
-void moveReverse(int speed);
-void turnRight(int speed);
-void turnLeft(int speed);
+void increaseSpeed(int step);
+void decreaseSpeed(int step);
+void moveForward();
+void moveReverse();
+void turnRight();
+void turnLeft();
 void stopMotors();
 
 #endif
-
-
-
-
-
-
-

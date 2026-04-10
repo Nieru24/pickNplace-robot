@@ -8,5 +8,6 @@ extern SoftwareSerial BTSerial;
 
 void bluetoothSetup();
 char bluetoothLoop();
+void sendSpeed();
 
 #endif

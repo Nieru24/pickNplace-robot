@@ -4,44 +4,101 @@
 
 SoftwareSerial MasterSerial(NANO_RX, NANO_TX);
 
-Servo servoLeft1;   // Left  - Side
-Servo servoLeft2;   // Left  - Elevation
-Servo servoRight1;  // Right - Side
-Servo servoRight2;  // Right - Elevation
+Servo servoLeftLift;
+Servo servoLeftElbow;
+Servo servoRightLift;
+Servo servoRightElbow;
+Servo servoRightGrip;
+
+int leftLiftAngle = 90;
+int leftElbowAngle = 90;
+int rightLiftAngle = 90;
+int rightElbowAngle = 90;
+int rightGripAngle = 100;
+
+const int STEP = 10;
+
+int clampServoAngle(int angle) {
+  if (angle < 0) return 0;
+  if (angle > 180) return 180;
+  return angle;
+}
+
+void applyServoPositions() {
+  servoLeftLift.write(leftLiftAngle);
+  servoLeftElbow.write(leftElbowAngle);
+  servoRightLift.write(rightLiftAngle);
+  servoRightElbow.write(rightElbowAngle);
+  servoRightGrip.write(rightGripAngle);
+}
+
+void resetArm() {
+  leftLiftAngle = 90;
+  leftElbowAngle = 90;
+  rightLiftAngle = 90;
+  rightElbowAngle = 90;
+  rightGripAngle = 100;
+  applyServoPositions();
+}
 
 void setup() {
   Serial.begin(9600);
   MasterSerial.begin(9600);
+  MasterSerial.listen();
 
-  servoLeft1.attach(SERVO_LEFT_1);
-  servoLeft2.attach(SERVO_LEFT_2);
-  servoRight1.attach(SERVO_RIGHT_1);
-  servoRight2.attach(SERVO_RIGHT_2);
+  servoLeftLift.attach(SERVO_LEFT_LIFT);
+  servoLeftElbow.attach(SERVO_LEFT_ELBOW);
+  servoRightLift.attach(SERVO_RIGHT_LIFT);
+  servoRightElbow.attach(SERVO_RIGHT_ELBOW);
+  servoRightGrip.attach(SERVO_RIGHT_GRIP);
+
+  resetArm();
 }
 
 void loop() {
   if (MasterSerial.available()) {
-    char cmd = MasterSerial.read();
+    char data = MasterSerial.read();
     Serial.print("Command received: ");
-    Serial.println(cmd);
+    Serial.println(data);
 
-    switch (cmd) {
-      case 'O': // Open gripper
-        servoLeft1.write(90);
-        servoRight1.write(90);
+    switch (data) {
+      case 'I': // Left lift up
+        leftLiftAngle = clampServoAngle(leftLiftAngle + STEP);
         break;
-      case 'C': // Close gripper
-        servoLeft1.write(0);
-        servoRight1.write(0);
+      case 'K': // Left lift down
+        leftLiftAngle = clampServoAngle(leftLiftAngle - STEP);
         break;
-      case 'U': // Elevate up
-        servoLeft2.write(90);
-        servoRight2.write(90);
+      case 'J': // Left elbow up
+        leftElbowAngle = clampServoAngle(leftElbowAngle + STEP);
         break;
-      case 'D': // Elevate down
-        servoLeft2.write(0);
-        servoRight2.write(0);
+      case 'L': // Left elbow down
+        leftElbowAngle = clampServoAngle(leftElbowAngle - STEP);
+        break;
+      case 'T': // Right lift up
+        rightLiftAngle = clampServoAngle(rightLiftAngle + STEP);
+        break;
+      case 'G': // Right lift down
+        rightLiftAngle = clampServoAngle(rightLiftAngle - STEP);
+        break;
+      case 'Y': // Right elbow up
+        rightElbowAngle = clampServoAngle(rightElbowAngle + STEP);
+        break;
+      case 'H': // Right elbow down
+        rightElbowAngle = clampServoAngle(rightElbowAngle - STEP);
+        break;
+      case 'U': // Right grip open
+        rightGripAngle = clampServoAngle(rightGripAngle + STEP);
+        break;
+      case 'N': // Right grip close
+        rightGripAngle = clampServoAngle(rightGripAngle - STEP);
+        break;
+      case 'X': // Reset arm
+        resetArm();
+        return;
+      default:
         break;
     }
+
+    applyServoPositions();
   }
 }

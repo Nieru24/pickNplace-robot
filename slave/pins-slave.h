@@ -1,16 +1,17 @@
 #ifndef PINS_H
 #define PINS_H
 
-// Servo  Pins
-const int SERVO_LEFT_1 = 8;    // Left  - Side
-const int SERVO_LEFT_2 = 7;    // Left  - Elevation
+// Servo Pins
+const int SERVO_LEFT_LIFT = 8;
+const int SERVO_LEFT_ELBOW = 7;
 
-const int SERVO_RIGHT_1 = 4;   // Right - Side
-const int SERVO_RIGHT_2 = 2;   // Right - Elevation
+const int SERVO_RIGHT_LIFT = 4;
+const int SERVO_RIGHT_ELBOW = 11;
+const int SERVO_RIGHT_GRIP = 12;
 
 
 // Master Arduino Nano Pins
-const int NANO_RX = A1;
-const int NANO_TX = A0;
+const int NANO_RX = 2; // PIN 3 OF ARDUINO UNO
+const int NANO_TX = 3; // PIN 2 OF ARDUINO UNO
 
 #endif
